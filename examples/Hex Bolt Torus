@@ -1,0 +1,8 @@
+function main() {
+   return [
+      torus({ fni:4,fno:6,roti:45})
+      .translate([-10,30,0]),
+
+     
+   ];
+}
