@@ -1,8 +1,8 @@
 function main() {
-   return [
+   return rotate([90,0,0],[
       torus({ fni:4,fno:6,roti:45})
       .translate([-10,30,0]),
 
      
-   ];
+   ]);
 }
