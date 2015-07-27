@@ -1,0 +1,81 @@
+// title      : e-NABLE COne-o-matic
+// author     : Daniel R. Dugan and Kyle Bissell
+// license    : MIT License
+// revision   : 0.003
+// tags       : Cone, Monette Socket
+// file       : logo.jscad
+
+function main(params) {
+//Main cone
+ var cone = CSG.cylinder({
+   start: [0,params.length +1,0], 
+   end: [0,0,0], 
+   radiusStart:params.c1, 
+   radiusEnd:params.c2, 
+   resolution: 16
+   });
+ 
+var inside = CSG.cylinder({
+  start: [0,params.length +1,0], 
+  end: [0,0,0], 
+  radiusStart:params.c1 - .5,
+  radiusEnd:1, 
+  resolution: 16
+  });
+  
+var elbow = CSG.cylinder({                      
+  start: [0, params.length, 0],
+  end: [0, params.length, params.c1],
+  radius: params.c1-1,                        
+  resolution: 160
+  });
+cone = cone.subtract(inside);
+cone = cone.subtract(elbow);
+var t = torus({ fni:4,fno:6,roti:45});
+t = t.rotateX(90);
+t=t.scale(.5);
+
+var mountHole = CSG.cylinder({ 
+    start: [0,0, 0],
+    end: [0,2, 0],
+    radius: .5,
+    center:true,
+    resolution: 32 
+    }); 
+    
+    mountHole =rotate([0,0,90],mountHole);
+    mountHole = mountHole.translate([params.c1,params.length,0]);
+    
+cone = cone.subtract(mountHole);
+cone = cone.subtract(mountHole.mirroredX());
+
+mountHole = mountHole.translate([0,-2,0]);
+
+cone = cone.subtract(mountHole);
+cone = cone.subtract(mountHole.mirroredX());
+
+return union(cone,t);
+
+  }
+
+function getParameterDefinitions() {
+  return [
+    { name: 'length', 
+      caption: 'Arm Length:', 
+      type: 'float', 
+      default: 15 
+    },
+    { name: 'c1', 
+      caption: 'Back Circumference (Closest to elbow):', 
+      type: 'float', 
+      default: 7 
+    },
+    { name: 'c2', 
+      caption: 'Front Circumference (Closest to hand):', 
+      type: 'float', 
+      default: 4 
+    },
+    
+    
+  ];
+}
