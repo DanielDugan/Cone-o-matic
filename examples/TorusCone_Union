@@ -11,6 +11,15 @@ t = t.rotateX(90);
 t = t.translate([0,-1,0]);
 t=t.scale(.5);
 
+var mountHole = CSG.cylinder({ 
+    start: [params.c1-1, params.length-1, 0],
+    end: [params.c1-1, params.length, 0],
+    radius: 1, resolution: 32 
+    }); 
+cone = cone.subtract(mountHole);
+mountHole = mountHole.mirroredX();
+cone = cone.subtract(mountHole);
+
 return union(cone,t);
 
   }
