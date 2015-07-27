@@ -1,11 +1,25 @@
 function main(params) {
- var cone = CSG.cylinder
-    ({start: [0,params.length +1,0], end: [0,0,0], radiusStart:params.c1, radiusEnd:params.c2, resolution: 16});
-var inside = CSG.cylinder({start: [0,params.length +1,0], end: [0,0,0], radiusStart:params.c1 - .5,radiusEnd:1, resolution: 16});
-var elbow = CSG.cylinder({                      // object-oriented
+//Main cone
+ var cone = CSG.cylinder({
+   start: [0,params.length +1,0], 
+   end: [0,0,0], 
+   radiusStart:params.c1, 
+   radiusEnd:params.c2, 
+   resolution: 16
+   });
+ 
+var inside = CSG.cylinder({
+  start: [0,params.length +1,0], 
+  end: [0,0,0], 
+  radiusStart:params.c1 - .5,
+  radiusEnd:1, 
+  resolution: 16
+  });
+  
+var elbow = CSG.cylinder({                      
   start: [0, params.length, 0],
   end: [0, params.length, params.c1],
-  radius: params.c1-1,                        // true cylinder
+  radius: params.c1-1,                        
   resolution: 160
   });
 cone = cone.subtract(inside);
@@ -29,9 +43,21 @@ return union(cone,t);
 
 function getParameterDefinitions() {
   return [
-    { name: 'length', caption: 'Arm Length:', type: 'float', default: 15 },
-    { name: 'c1', caption: 'Back Circumference (Closest to elbow):', type: 'float', default: 7 },
-    { name: 'c2', caption: 'Front Circumference (Closest to hand):', type: 'float', default: 4 },
+    { name: 'length', 
+      caption: 'Arm Length:', 
+      type: 'float', 
+      default: 15 
+    },
+    { name: 'c1', 
+      caption: 'Back Circumference (Closest to elbow):', 
+      type: 'float', 
+      default: 7 
+    },
+    { name: 'c2', 
+      caption: 'Front Circumference (Closest to hand):', 
+      type: 'float', 
+      default: 4 
+    },
     
     
   ];
