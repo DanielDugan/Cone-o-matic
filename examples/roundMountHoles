@@ -37,7 +37,7 @@ t=t.scale(.5);
 
 var mountHole = CSG.cylinder({ 
     start: [0,0, 0],
-    end: [0,2, 0],
+    end: [0,params.c1 - params.c2 + 1, 0],
     radius: .5,
     center:true,
     resolution: 16
