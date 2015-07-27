@@ -27,7 +27,7 @@ var elbow = CSG.cylinder({
   start: [0, params.length, 0],
   end: [0, params.length, params.c1],
   radius: params.c1-1,                        
-  resolution: 160
+  resolution: 16
   });
 cone = cone.subtract(inside);
 cone = cone.subtract(elbow);
@@ -40,7 +40,7 @@ var mountHole = CSG.cylinder({
     end: [0,2, 0],
     radius: .5,
     center:true,
-    resolution: 32 
+    resolution: 16
     }); 
     
     mountHole =rotate([0,0,90],mountHole);
@@ -54,6 +54,14 @@ mountHole = mountHole.translate([0,-2,0]);
 cone = cone.subtract(mountHole);
 cone = cone.subtract(mountHole.mirroredX());
 
+var mountHoleCover = torus({ro:0.75,ri:.05});
+mountHoleCover = mountHoleCover.rotateY(86);
+mountHoleCover = mountHoleCover.rotateX(90);
+mountHoleCover = mountHoleCover.scale([3,1,1]);
+mountHoleCover = mountHoleCover.translate([params.c1-.25,params.length,0]);
+cone = union(cone,mountHoleCover,mountHoleCover.mirroredX());
+mountHoleCover = mountHoleCover.translate([-.35,-2,0]);
+cone = union(cone,mountHoleCover,mountHoleCover.mirroredX());
 return union(cone,t);
 
   }
