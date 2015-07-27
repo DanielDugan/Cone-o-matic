@@ -47,7 +47,7 @@ var mountHole = CSG.cylinder({
     resolution: params.resolution
     }); 
     
-    mountHole =rotate([0,0,90],mountHole);
+    mountHole =mountHole.rotateZ(90);
     mountHole = mountHole.translate([params.c1,params.length,0]);
     
 cone = cone.subtract(mountHole);
