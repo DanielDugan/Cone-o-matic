@@ -12,7 +12,7 @@ function main(params) {
    end: [0,0,0], 
    radiusStart:params.c1, 
    radiusEnd:params.c2, 
-   resolution: 16
+   resolution: params.resolution
    });
  
 var inside = CSG.cylinder({
@@ -20,14 +20,14 @@ var inside = CSG.cylinder({
   end: [0,0,0], 
   radiusStart:params.c1 - .5,
   radiusEnd:1, 
-  resolution: 16
+  resolution: params.resolution
   });
   
 var elbow = CSG.cylinder({                      
   start: [0,0,0],//[0, params.length, 0],
   end:[0,0,params.c1],// [0, params.length, params.c1],
   radius: params.c1-1,                        
-  resolution: 16
+  resolution: params.resolution
   });
 elbow = elbow.rotateX(-22);
 elbow = elbow.translate([0,params.length,0]);
@@ -44,7 +44,7 @@ var mountHole = CSG.cylinder({
     end: [0,params.c1 - params.c2 + 1, 0],
     radius: params.mountHoleCircumference/2,
     center:true,
-    resolution: 16
+    resolution: params.resolution
     }); 
     
     mountHole =rotate([0,0,90],mountHole);
@@ -96,6 +96,11 @@ function getParameterDefinitions() {
         caption: 'Mount Hole Circumference',
         type: 'float',
         default: 1
+    },{
+        name: 'resolution',
+        caption: 'resolution',
+        type: 'int',
+        default: 16
     }
   ];
 }
