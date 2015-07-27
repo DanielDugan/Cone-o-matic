@@ -24,21 +24,25 @@ var inside = CSG.cylinder({
   });
   
 var elbow = CSG.cylinder({                      
-  start: [0, params.length, 0],
-  end: [0, params.length, params.c1],
+  start: [0,0,0],//[0, params.length, 0],
+  end:[0,0,params.c1],// [0, params.length, params.c1],
   radius: params.c1-1,                        
   resolution: 16
   });
+elbow = elbow.rotateX(-22);
+elbow = elbow.translate([0,params.length,0]);
 cone = cone.subtract(inside);
 cone = cone.subtract(elbow);
 var t = torus({ fni:4,fno:6,roti:45});
 t = t.rotateX(90);
 t=t.scale(.5);
 
+cone = union(cone,t);
+
 var mountHole = CSG.cylinder({ 
     start: [0,0, 0],
     end: [0,params.c1 - params.c2 + 1, 0],
-    radius: .5,
+    radius: params.mountHoleCircumference/2,
     center:true,
     resolution: 16
     }); 
@@ -49,20 +53,24 @@ var mountHole = CSG.cylinder({
 cone = cone.subtract(mountHole);
 cone = cone.subtract(mountHole.mirroredX());
 
-mountHole = mountHole.translate([0,-2,0]);
+mountHole = mountHole.translate([0,-2*params.mountHoleCircumference,0]);
 
 cone = cone.subtract(mountHole);
 cone = cone.subtract(mountHole.mirroredX());
 
-var mountHoleCover = torus({ro:0.75,ri:.05});
+var mountHoleCover = torus({
+    ro:0.75*params.mountHoleCircumference,
+    ri:.05*params.mountHoleCircumference
+    
+});
 mountHoleCover = mountHoleCover.rotateY(86);
 mountHoleCover = mountHoleCover.rotateX(90);
 mountHoleCover = mountHoleCover.scale([3,1,1]);
 mountHoleCover = mountHoleCover.translate([params.c1-.25,params.length,0]);
 cone = union(cone,mountHoleCover,mountHoleCover.mirroredX());
-mountHoleCover = mountHoleCover.translate([-.35,-2,0]);
+mountHoleCover = mountHoleCover.translate([-.35,-2*params.mountHoleCircumference,0]);
 cone = union(cone,mountHoleCover,mountHoleCover.mirroredX());
-return union(cone,t);
+return union(cone);
 
   }
 
@@ -83,7 +91,11 @@ function getParameterDefinitions() {
       type: 'float', 
       default: 4 
     },
-    
-    
+    {
+        name: 'mountHoleCircumference',
+        caption: 'Mount Hole Circumference',
+        type: 'float',
+        default: 1
+    }
   ];
 }
