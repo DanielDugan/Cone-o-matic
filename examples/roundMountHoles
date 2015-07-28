@@ -21,6 +21,9 @@ function main(params) {
   return cone;
 }
 
+var mountHoleCircumference = 1;
+var socketCircumference = 1;
+
 function getParameterDefinitions() {
   return [{
     name: 'length',
@@ -38,11 +41,6 @@ function getParameterDefinitions() {
     type: 'float',
     default: 4
   }, {
-    name: 'mountHoleCircumference',
-    caption: 'Mount Hole Circumference',
-    type: 'float',
-    default: 1
-  }, {
     name: 'resolution',
     caption: 'resolution',
     type: 'int',
@@ -57,7 +55,7 @@ function hollowOutInside(cone, params) {
     start: [0, params.length + 1, 0],
     end: [0, 0, 0],
     radiusStart: params.c1 - .5,
-    radiusEnd: 2,
+    radiusEnd: socketCircumference,
     resolution: params.resolution
   });
   cone = cone.subtract(inside);
@@ -95,24 +93,25 @@ function makeMountHoles(cone, params) {
   var mountHole = CSG.cylinder({
     start: [0, 0, 0],
     end: [0, params.c1 - params.c2 + 1, 0],
-    radius: params.mountHoleCircumference / 2,
+    radius: mountHoleCircumference / 2,
     center: true,
     resolution: params.resolution
   });
 
   mountHole = mountHole.rotateZ(90);
   mountHole = mountHole.translate([
-      params.c1,
-      params.length -
-      params.mountHoleCircumference,
-      0]);
+    params.c1,
+    params.length -
+    mountHoleCircumference,
+    0
+  ]);
   cone = cone.subtract(mountHole);
   cone = cone.subtract(mountHole.mirroredX());
 
   mountHole = mountHole.translate([
-      0,
-      -2 * params.mountHoleCircumference,
-      0]);
+    0, -2 * mountHoleCircumference,
+    0
+  ]);
 
   cone = cone.subtract(mountHole);
   cone = cone.subtract(mountHole.mirroredX());
@@ -121,26 +120,26 @@ function makeMountHoles(cone, params) {
 
 function addCoverToMountHoles(cone, params) {
   var mountHoleCover = torus({
-    ro: 0.75 * params.mountHoleCircumference,
-    ri: .05 * params.mountHoleCircumference
+    ro: 0.75 * mountHoleCircumference,
+    ri: .05 * mountHoleCircumference
 
   });
   mountHoleCover = mountHoleCover.rotateY(86);
   mountHoleCover = mountHoleCover.rotateX(90);
   mountHoleCover = mountHoleCover.scale([3, 1, 1]);
   mountHoleCover = mountHoleCover.translate([
-      params.c1 - .35 * params.mountHoleCircumference,
-      params.length - params.mountHoleCircumference,
-      0]);
-  cone = union( cone,
-                mountHoleCover,
-                mountHoleCover.mirroredX());
-  mountHoleCover = mountHoleCover.translate([
-      -.35 * params.mountHoleCircumference,
-      -2 * params.mountHoleCircumference,
-      0]);
-  cone = union( cone,
-                mountHoleCover,
-                mountHoleCover.mirroredX());
+    params.c1 - .35 * mountHoleCircumference,
+    params.length - mountHoleCircumference,
+    0
+  ]);
+  cone = union(cone,
+    mountHoleCover,
+    mountHoleCover.mirroredX());
+  mountHoleCover = mountHoleCover.translate([-.35 * mountHoleCircumference, -2 * mountHoleCircumference,
+    0
+  ]);
+  cone = union(cone,
+    mountHoleCover,
+    mountHoleCover.mirroredX());
   return cone;
 }
