@@ -6,101 +6,141 @@
 // file       : logo.jscad
 
 function main(params) {
-//Main cone
- var cone = CSG.cylinder({
-   start: [0,params.length +1,0], 
-   end: [0,0,0], 
-   radiusStart:params.c1, 
-   radiusEnd:params.c2, 
-   resolution: params.resolution
-   });
- 
-var inside = CSG.cylinder({
-  start: [0,params.length +1,0], 
-  end: [0,0,0], 
-  radiusStart:params.c1 - .5,
-  radiusEnd:1, 
-  resolution: params.resolution
-  });
-  
-var elbow = CSG.cylinder({                      
-  start: [0,0,0],//[0, params.length, 0],
-  end:[0,0,params.c1],// [0, params.length, params.c1],
-  radius: params.c1-1,                        
-  resolution: params.resolution
-  });
-elbow = elbow.rotateX(-22);
-elbow = elbow.translate([0,params.length,0]);
-cone = cone.subtract(inside);
-cone = cone.subtract(elbow);
-var t = torus({ fni:4,fno:6,roti:45});
-t = t.rotateX(90);
-t=t.scale(.5);
-
-cone = union(cone,t);
-
-var mountHole = CSG.cylinder({ 
-    start: [0,0, 0],
-    end: [0,params.c1 - params.c2 + 1, 0],
-    radius: params.mountHoleCircumference/2,
-    center:true,
+  var cone = CSG.cylinder({
+    start: [0, params.length + 1, 0],
+    end: [0, 0, 0],
+    radiusStart: params.c1,
+    radiusEnd: params.c2,
     resolution: params.resolution
-    }); 
-    
-    mountHole =mountHole.rotateZ(90);
-    mountHole = mountHole.translate([params.c1,params.length,0]);
-    
-cone = cone.subtract(mountHole);
-cone = cone.subtract(mountHole.mirroredX());
-
-mountHole = mountHole.translate([0,-2*params.mountHoleCircumference,0]);
-
-cone = cone.subtract(mountHole);
-cone = cone.subtract(mountHole.mirroredX());
-
-var mountHoleCover = torus({
-    ro:0.75*params.mountHoleCircumference,
-    ri:.05*params.mountHoleCircumference
-    
-});
-mountHoleCover = mountHoleCover.rotateY(86);
-mountHoleCover = mountHoleCover.rotateX(90);
-mountHoleCover = mountHoleCover.scale([3,1,1]);
-mountHoleCover = mountHoleCover.translate([params.c1-.25,params.length,0]);
-cone = union(cone,mountHoleCover,mountHoleCover.mirroredX());
-mountHoleCover = mountHoleCover.translate([-.35,-2*params.mountHoleCircumference,0]);
-cone = union(cone,mountHoleCover,mountHoleCover.mirroredX());
-return union(cone);
-
-  }
+  });
+  cone = hollowOutInside(cone, params);
+  cone = addElbow(cone, params);
+  cone = addCoverToSocket(cone);
+  cone = makeMountHoles(cone, params);
+  cone = addCoverToMountHoles(cone, params);
+  return cone;
+}
 
 function getParameterDefinitions() {
-  return [
-    { name: 'length', 
-      caption: 'Arm Length:', 
-      type: 'float', 
-      default: 15 
-    },
-    { name: 'c1', 
-      caption: 'Back Circumference (Closest to elbow):', 
-      type: 'float', 
-      default: 7 
-    },
-    { name: 'c2', 
-      caption: 'Front Circumference (Closest to hand):', 
-      type: 'float', 
-      default: 4 
-    },
-    {
-        name: 'mountHoleCircumference',
-        caption: 'Mount Hole Circumference',
-        type: 'float',
-        default: 1
-    },{
-        name: 'resolution',
-        caption: 'resolution',
-        type: 'int',
-        default: 16
-    }
-  ];
+  return [{
+    name: 'length',
+    caption: 'Arm Length:',
+    type: 'float',
+    default: 15
+  }, {
+    name: 'c1',
+    caption: 'Back Circumference (Closest to elbow):',
+    type: 'float',
+    default: 7
+  }, {
+    name: 'c2',
+    caption: 'Front Circumference (Closest to hand):',
+    type: 'float',
+    default: 4
+  }, {
+    name: 'mountHoleCircumference',
+    caption: 'Mount Hole Circumference',
+    type: 'float',
+    default: 1
+  }, {
+    name: 'resolution',
+    caption: 'resolution',
+    type: 'int',
+    default: 16
+  }];
+}
+
+
+
+function hollowOutInside(cone, params) {
+  var inside = CSG.cylinder({
+    start: [0, params.length + 1, 0],
+    end: [0, 0, 0],
+    radiusStart: params.c1 - .5,
+    radiusEnd: 2,
+    resolution: params.resolution
+  });
+  cone = cone.subtract(inside);
+  return cone;
+}
+
+function addElbow(cone, params) {
+  var elbow = CSG.cylinder({
+    start: [0, 0, 0],
+    end: [0, 0, params.c1],
+    radius: params.c1 - 1,
+    resolution: params.resolution
+  });
+  elbow = elbow.rotateX(-22);
+  elbow = elbow.translate([0, params.length, 0]);
+
+  cone = cone.subtract(elbow);
+  return cone;
+}
+
+function addCoverToSocket(cone) {
+  var cover = torus({
+    fni: 4,
+    fno: 6,
+    roti: 45
+  });
+  cover = cover.rotateX(90);
+  cover = cover.scale(.5);
+
+  cone = union(cone, cover);
+  return cone;
+}
+
+function makeMountHoles(cone, params) {
+  var mountHole = CSG.cylinder({
+    start: [0, 0, 0],
+    end: [0, params.c1 - params.c2 + 1, 0],
+    radius: params.mountHoleCircumference / 2,
+    center: true,
+    resolution: params.resolution
+  });
+
+  mountHole = mountHole.rotateZ(90);
+  mountHole = mountHole.translate([
+      params.c1,
+      params.length -
+      params.mountHoleCircumference,
+      0]);
+  cone = cone.subtract(mountHole);
+  cone = cone.subtract(mountHole.mirroredX());
+
+  mountHole = mountHole.translate([
+      0,
+      -2 * params.mountHoleCircumference,
+      0]);
+
+  cone = cone.subtract(mountHole);
+  cone = cone.subtract(mountHole.mirroredX());
+  return cone;
+}
+
+function addCoverToMountHoles(cone, params) {
+  var mountHoleCover = torus({
+    ro: 0.75 * params.mountHoleCircumference,
+    ri: .05 * params.mountHoleCircumference
+
+  });
+  mountHoleCover = mountHoleCover.rotateY(86);
+  mountHoleCover = mountHoleCover.rotateX(90);
+  mountHoleCover = mountHoleCover.scale([3, 1, 1]);
+  mountHoleCover = mountHoleCover.translate([
+      params.c1 - .35 * params.mountHoleCircumference,
+      params.length - params.mountHoleCircumference,
+      0]);
+  cone = union( cone,
+                mountHoleCover,
+                mountHoleCover.mirroredX());
+  mountHoleCover = mountHoleCover.translate([
+      -.35 * params.mountHoleCircumference,
+      -2 * params.mountHoleCircumference,
+      0]);
+  cone = union( cone,
+                mountHoleCover,
+                mountHoleCover.mirroredX());
+  return cone;
 }
