@@ -83,7 +83,7 @@ function addCoverToSocket(cone) {
     roti: 45
   });
   cover = cover.rotateX(90);
-  cover = cover.scale(.5);
+  cover = cover.scale(.5*socketCircumference);
 
   cone = union(cone, cover);
   return cone;
