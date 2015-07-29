@@ -213,7 +213,7 @@ function getParameterDefinitions() {
       "yellowgreen"
     ],
     caption: 'Color:',
-    initial: "SQU",
+    initial: "hotpink",
   }];
 }
 
@@ -272,7 +272,7 @@ function makeMountHoles(cone, params) {
     params.c1,
     params.length -
     mountHoleCircumference,
-    0
+    0-mountHoleCircumference
   ]);
   cone = cone.subtract(mountHole);
   cone = cone.subtract(mountHole.mirroredX());
@@ -299,7 +299,7 @@ function addCoverToMountHoles(cone, params) {
   mountHoleCover = mountHoleCover.translate([
     params.c1 - .35 * mountHoleCircumference,
     params.length - mountHoleCircumference,
-    0
+    0-mountHoleCircumference
   ]);
   cone = union(cone,
     mountHoleCover,
