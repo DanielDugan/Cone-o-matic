@@ -16,15 +16,14 @@ function main(params) {
   cone = hollowOutInside(cone, params);
   cone = addSocket(cone,params);
   cone = addElbow(cone, params);
-  cone = addCoverToSocket(cone);
+  cone = addCoverToSocket(cone,params);
   cone = makeMountHoles(cone, params);
-  cone = addCoverToMountHoles(cone, params);
+  //cone = addCoverToMountHoles(cone, params);
   return cone;
 }
 
-var mountHoleCircumference = 25;
-var socketCircumference = 50;
-var socketDepth = 5;
+var mountHoleCircumference = 6.35;
+var socketCircumference = 12.7;
 
 function getParameterDefinitions() {
   return [{
@@ -60,7 +59,7 @@ function getParameterDefinitions() {
 function hollowOutInside(cone, params) {
   var inside = CSG.cylinder({
     start: [0, params.length+1, 0],
-    end: [0, socketDepth, 0],
+    end: [0, params.thickness, 0],
     radiusStart:    params.c1-params.thickness,                
     radiusEnd:      params.c2-params.thickness,
     resolution: params.resolution
@@ -72,7 +71,7 @@ function hollowOutInside(cone, params) {
 function addSocket(cone,params){
     var socketHole = CSG.cylinder({
     start: [0,0, 0],
-    end: [0, socketDepth, 0],
+    end: [0, params.thickness, 0],
     radius: socketCircumference / 2,
     resolution: params.resolution
   }); 
@@ -94,7 +93,7 @@ function addElbow(cone, params) {
   return cone;
 }
 
-function addCoverToSocket(cone) {
+function addCoverToSocket(cone,params) {
   var cover = torus({
     fni: 4,
     fno: 6,
@@ -103,7 +102,7 @@ function addCoverToSocket(cone) {
   cover = cover.rotateX(90);
   cover = cover.scale([
       .2*socketCircumference,
-      1,
+      params.thickness,
       .2*socketCircumference]);
   //cover = cover.translate([0,.1*socketCircumference,0]);
   cone = union(cone, cover);
