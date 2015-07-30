@@ -14,6 +14,7 @@ function main(params) {
     resolution: params.resolution
   });
   cone = hollowOutInside(cone, params);
+  cone = addSocket(cone,params);
   cone = addElbow(cone, params);
   cone = addCoverToSocket(cone);
   cone = makeMountHoles(cone, params);
@@ -221,14 +222,24 @@ function getParameterDefinitions() {
 
 function hollowOutInside(cone, params) {
   var inside = CSG.cylinder({
-    start: [0, params.length + 1, 0],
-    end: [0, 0, 0],
-    radiusStart: params.c1 - .5,
-    radiusEnd: socketCircumference,
+    start: [0, params.length+1, 0],
+    end: [0, socketDepth, 0],
+    radius: params.c2,
     resolution: params.resolution
   });
   cone = cone.subtract(inside);
   return cone;
+}
+
+function addSocket(cone,params){
+    var socketHole = CSG.cylinder({
+    start: [0,0, 0],
+    end: [0, socketDepth, 0],
+    radius: socketCircumference / 2,
+    resolution: params.resolution
+  }); 
+  cone = cone.subtract(socketHole);
+    return cone;
 }
 
 function addElbow(cone, params) {
