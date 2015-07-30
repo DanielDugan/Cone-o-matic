@@ -24,6 +24,7 @@ function main(params) {
 
 var mountHoleCircumference = 1;
 var socketCircumference = 1;
+var socketDepth = 2;
 
 function getParameterDefinitions() {
   return [{
