@@ -14,6 +14,7 @@ function main(params) {
     resolution: params.resolution
   });
   cone = hollowOutInside(cone, params);
+  cone = addSocket(cone,params);
   cone = addElbow(cone, params);
   cone = addCoverToSocket(cone);
   cone = makeMountHoles(cone, params);
@@ -23,6 +24,7 @@ function main(params) {
 
 var mountHoleCircumference = 1;
 var socketCircumference = 1;
+var socketDepth = 2;
 
 function getParameterDefinitions() {
   return [{
@@ -213,7 +215,7 @@ function getParameterDefinitions() {
       "yellowgreen"
     ],
     caption: 'Color:',
-    initial: "SQU",
+    initial: "hotpink",
   }];
 }
 
@@ -221,14 +223,24 @@ function getParameterDefinitions() {
 
 function hollowOutInside(cone, params) {
   var inside = CSG.cylinder({
-    start: [0, params.length + 1, 0],
-    end: [0, 0, 0],
-    radiusStart: params.c1 - .5,
-    radiusEnd: socketCircumference,
+    start: [0, params.length+1, 0],
+    end: [0, socketDepth, 0],
+    radius: params.c2,
     resolution: params.resolution
   });
   cone = cone.subtract(inside);
   return cone;
+}
+
+function addSocket(cone,params){
+    var socketHole = CSG.cylinder({
+    start: [0,0, 0],
+    end: [0, socketDepth, 0],
+    radius: socketCircumference / 2,
+    resolution: params.resolution
+  }); 
+  cone = cone.subtract(socketHole);
+    return cone;
 }
 
 function addElbow(cone, params) {
@@ -272,7 +284,7 @@ function makeMountHoles(cone, params) {
     params.c1,
     params.length -
     mountHoleCircumference,
-    0
+    0-mountHoleCircumference
   ]);
   cone = cone.subtract(mountHole);
   cone = cone.subtract(mountHole.mirroredX());
@@ -299,7 +311,7 @@ function addCoverToMountHoles(cone, params) {
   mountHoleCover = mountHoleCover.translate([
     params.c1 - .35 * mountHoleCircumference,
     params.length - mountHoleCircumference,
-    0
+    0-mountHoleCircumference
   ]);
   cone = union(cone,
     mountHoleCover,
