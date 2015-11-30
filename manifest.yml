@@ -1,0 +1,4 @@
+---
+applications:
+- name: e-nable
+  memory: 500M
